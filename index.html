@@ -1,0 +1,609 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Prototype</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="chroma.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="form.css">
+    <script>
+        
+        //Number of data points for each industry. Helps with spacing each data point with the linex() function
+        var energyCount=247;
+        var financialCount=498;
+        var materialsCount=201;
+        var consumerdiscretionaryCount=625;
+        var industrialsCount=504;
+        var healthcareCount=447;
+        var realestateCount=258;
+        var itCount=559;
+        var telecomCount=30;
+        var utilitiesCount=196;
+        var consumerstaplesCount=258;
+        
+        function linex(count,sector){
+            if(sector=="energy"){            
+                return (800/energyCount) * count;
+            }
+            else if(sector=="financial"){
+                return (800/financialCount) * count;
+            }
+            else if(sector=="materials"){
+                return (800/materialsCount) * count;
+            }
+            else if(sector=="consumerdiscretionary"){
+                return (800/consumerdiscretionaryCount) * count;
+            }
+            else if(sector=="industrials"){
+                return (800/industrialsCount) * count;
+            }
+            else if(sector=="healthcare"){
+                return (800/healthcareCount) * count;
+            }
+            else if(sector=="realestate"){
+                return (800/realestateCount) * count;
+            }
+            else if(sector=="it"){
+                return (800/itCount) * count;
+            }
+            else if(sector=="utilities"){
+                return (800/utilitiesCount) * count;
+            }
+            else if(sector=="consumerstaples"){
+                return (800/consumerstaplesCount) * count;
+            }
+            else{
+                return (800/telecomCount) * count;
+            }
+        }
+        
+        //Draws the graph for each sector
+        function drawEnergySector(){
+            energyDefault();
+            //give each line an id that's numbered inside draw function
+            d3.select("#industry").text("Industry: Energy");
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",0).attr("width", 176).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",energyOne).on("mouseout",energyDefault);
+            target.append("rect").attr("x",176).attr("y",400).attr("width", 210).attr("height", 310).attr("fill","#1E1E1E").on("mouseover",energyTwo).on("mouseout",energyDefault);
+            target.append("rect").attr("x",386).attr("y",0).attr("width", 332).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",energyThree).on("mouseout",energyDefault);
+
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Energy"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"energy")).attr("y1",400).attr("x2",linex(count,"energy")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(450062))).on("mouseover",highlight);
+                        count++;
+                        //Used log in my calculations because numbers grew too fast.
+                    }
+                    
+                
+                }
+            });            
+        }
+        function energyDefault(){
+            d3.select("#description").text("Overall, the energy sector seems pretty volatile in both price and risks. However, it doesn't seem to move with macroeconomic trends. In fact, it was the only sector to see industry-wide growth during the 2008 economic crisis!");
+        }
+        function energyOne(){
+            d3.select("#description").text("Interestingly, companies reported relatively small changes to their risk factors, despite the financial crisis of the time. While projects were deferred or canceled due to unprofitability, oil prices crashed, and a supply crunch loomed in the air, the reported risks stayed surprisingly stable and stock prices even rose! One reason could be the irreplaceable nature of energy. Whether it's fossil fuels or renewable, energy is a vital part of the economy. At the end of the day, energy is the fundamental resource for all companyies so it makes sense that the sector would see little disturbance in the wake of macroeconomic events. It seems that TSO (Tesoro) is an exception to this growth but actually, the decrease in sotck price was due to a 2-1 stock split, it's gone up 700% since.");
+        }
+        function energyTwo(){
+            d3.select("#description").text("Companies messed around with their risk factors much more during these three years than the previous couple. However, it doesn't mean that this was why the stock went down. If you look ahead, risk factors continued to change but stock prices soared. What it does signify is the effect technology has on a company. After the 2008 shock, energy companies were forced to innovate. The unpredictable nature of technology (cybersecurity for example) means that this innovation inherently leads to a more volatile business.");
+        }
+        function energyThree(){
+            d3.select("#description").text("This period saw staggering growth within the industry with some hiccups along the way. It also saw more changes to risk factors. One factor for these changes in risk factors could be the popularity of renewable energy. Many energy companies are either moving towards it or betting against it, both of which mean significantly more risk. One company to look at is DVN (the tall blue line). This company saw tremendous growth and reported many changes in their 10-k. This is because at the time, Devon Energy Corp was investing in several midstream business and cost-saving initiatives, all of which could've been extremely costly and useless, or very beneficial to the company. Luckily, they were able to reduce costs by 42% and reap steady revenue from their acquisitions, factors that led to the jump in their stock price.");
+        }
+        
+        function drawFinancialSector(){
+            financialDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",400).attr("width", 115).attr("height", 310).attr("fill","#1E1E1E").on("mouseover",financialOne).on("mouseout",financialDefault);
+            target.append("rect").attr("x",115).attr("y",0).attr("width", 80).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",financialTwo).on("mouseout",financialDefault);
+            target.append("rect").attr("x",700).attr("y",0).attr("width", 100).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",financialThree).on("mouseout",financialDefault);
+            d3.select("#industry").text("Industry: Financial");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Financials"){
+
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"financial")).attr("y1",400).attr("x2",linex(count,"financial")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(543862))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        
+        function financialDefault(){
+            d3.select("#description").text("Overall, the financial sector moves a lot more closely with the economy. Interestingly though, risk factors are more stable during hard times and more volatile during times of growth. This could be due to several factors.");
+        }
+        function financialOne(){
+            d3.select("#description").text("While prices behaved according to expected during this period, risk factors remained surpringly constant. This could be due to the fact that financial institutions have already factored in all of the risks presented by the 2008 crisis and have no need to change their documents much further. Another interesting idea is their ulterior motives. Companies may be trying to appear stable to shareholders by keeping their risk factors steady.");
+        }
+        function financialTwo(){
+            d3.select("#description").text("Prices and changes in risk factors soared during this period. As the economy began to rebound, the public began reinvesting and believing in the financial institutions. Many others probably jumped in after seeing their undervalued stock after the crisis. Changes in risk factors were probably due to new legislation passed as a response to the crash. Companies are probably factoring in all of the possible implications of tighter regulation by the Fed.");
+        }
+        function financialThree(){
+            d3.select("#description").text("Yet again, despite drops in price, this period saw significant decreases in changes to risk factors. This is especially surprising due to the election and unpredictability of Donald Trump.");
+        }
+        
+        function drawMaterialsSector(){
+            materialsDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",115).attr("y",0).attr("width", 80).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",materialsOne).on("mouseout",materialsDefault);
+            target.append("rect").attr("x",340).attr("y",400).attr("width", 95).attr("height", 310).attr("fill","#1E1E1E").on("mouseover",materialsTwo).on("mouseout",materialsDefault);
+            target.append("rect").attr("x",630).attr("y",0).attr("width", 100).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",materialsThree).on("mouseout",materialsDefault);
+            d3.select("#industry").text("Industry: Materials");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Materials"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"materials")).attr("y1",400).attr("x2",linex(count,"materials")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(657638))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function materialsDefault(){
+            d3.select("#description").text("The materials sector is much more stable in their risk factors and also a lot less cyclic. Like the energy sector, materials are often fundamental to business processes and could be a reason for its stability. Another trend in this sector seems to be stable risk factors accompanied by rises in stock price.");
+        }
+        function materialsOne(){
+            d3.select("#description").text("This is one of the periods that emphasizes the overall trends of the industry. Risk factors are very stable during this period and prices are soaring. This could just be due to a combination of the overall economic trend of bouncing back from 2008 and a stable industry, but could also be an indicator of a deeper relationship. This is also the time when nano material technology is becoming popular.");
+        }
+        function materialsTwo(){
+            d3.select("#description").text("Many interesting outliers with respect to 10-k changes appeared in this period. For example, EMN kept their risk-factors exactly the same while SEE and NEM made hundreds of thousands of changes. Looking into NEM, they had announced a new President and CEO that year who initiated a 6 point plan to improve the company. The unpredictability of the whole situation could've been a reason as to why their 10-k changed so drastically.");
+        }
+        function materialsThree(){
+            d3.select("#description").text("This was yet another period where the industry as a whole saw price jumps while reporting stable consistent risk factors. The materials industry could be a sector in which risk factors are an accurate signal for vulnerability of a company. Companies are significantly investing in more robots. China's industrial manufacturing doubled their robot count in 2016.");
+        }
+        
+        function drawConsumerDiscretionarySector(){
+            consumerdiscretionaryDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",100).attr("y",0).attr("width", 70).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",consumerdiscretionaryOne).on("mouseout",consumerdiscretionaryDefault);
+            target.append("rect").attr("x",170).attr("y",400).attr("width", 200).attr("height", 310).attr("fill","#1E1E1E").on("mouseover",consumerdiscretionaryTwo).on("mouseout",consumerdiscretionaryDefault);
+            target.append("rect").attr("x",500).attr("y",0).attr("width", 210).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",consumerdiscretionaryThree).on("mouseout",consumerdiscretionaryDefault);
+            d3.select("#industry").text("Industry: Consumer Discretionary");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Consumer Discretionary"){
+                         target.append("line").datum(data[i]).attr("x1",linex(count,"consumerdiscretionary")).attr("y1",400).attr("x2",linex(count,"consumerdiscretionary")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke",getColor(Math.log(data[i].numberofchanges)/Math.log(391528))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function consumerdiscretionaryDefault(){
+            d3.select("#description").text("Overall, this industry is much more volatile in both price and risk factors. The number of yellow lines are much less than the number of green or blue ones. In addition, it seems like most jumps in stock price are during years where risk factors have changed drastically.");
+        }
+        function consumerdiscretionaryOne(){
+            d3.select("#description").text("This period is dominated by stock price increases and large risk factor changes. Similar to other industries, this could be a result of changing economic and political conditions due to the 2008 crisis. Discretionary spending was near all time lows.");
+        }
+        function consumerdiscretionaryTwo(){
+            d3.select("#description").text("This was a period of very random price changes and a lot of changing risk factors.");
+        }
+        function consumerdiscretionaryThree(){
+            d3.select("#description").text("In 2013 to 2016, most companyies that kept their risks constant saw price drops whereas companies who changed their risk factors drastically did better with their stock. Consumer spending at all time highs and still rising.");
+        }
+        
+        function drawIndustrialsSector(){
+            industrialsDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",0).attr("width", 120).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",industrialsOne).on("mouseout",industrialsDefault);
+            target.append("rect").attr("x",200).attr("y",0).attr("width", 600).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",industrialsTwo).on("mouseout",industrialsDefault);
+            d3.select("#industry").text("Industry: Industrials");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Industrials"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"industrials")).attr("y1",400).attr("x2",linex(count,"industrials")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(341495))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function industrialsDefault(){
+            d3.select("#description").text("The industrials industry is much more homogenous than others when it comes to changes in company risk factors. Most of the graph is the same color with a few extreme cases, most of which appear between 2007 and 2008. There also seems to be little to no relationship between changes is risks and price of the stock. One explanation for these trends could be that because the sector is so far-reaching and relevant to all businesses, its risks are constantly changing in response to bigger macroeconomic trends. This could also be a reason for why the price is so unpredictable.");
+        }
+        function industrialsOne(){
+            d3.select("#description").text("This period saw quite a few companies going bankrupt despite having an average or below average number of changes to their risks. You'd think a company that's about to fail would have a lot more risks to add...");
+        }
+        function industrialsTwo(){
+            d3.select("#description").text("The overall trend of the industry is pretty cyclic, meaning the price changes based on macroeconomic factors which are also cyclic. In industries like this, it may be irrelevant to consider the risk factors a company reports because it's so difficult to predict all macroeconomic risks.");
+        }
+        
+        
+        
+        function drawHealthCareSector(){
+            healthcareDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",0).attr("width", 140).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",healthcareOne).on("mouseout",healthcareDefault);
+            target.append("rect").attr("x",150).attr("y",0).attr("width", 300).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",healthcareTwo).on("mouseout",healthcareDefault);
+            target.append("rect").attr("x",480).attr("y",0).attr("width", 320).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",healthcareThree).on("mouseout",healthcareDefault);
+            d3.select("#industry").text("Industry: Health Care");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Health Care"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"healthcare")).attr("y1",400).attr("x2",linex(count,"healthcare")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(320737))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function healthcareDefault(){
+            d3.select("#description").text("Immediately, the overall trend of growth is shocking. When you look closer, it seems as if the periods of fall or lower growth is accompanied by relatively stable risk factors while periods marked by very volatile risks are met with large increases in stock price. Trends like these make the health care industry a promising area for further research into the relationships between risk factors and price.");
+        }
+        function healthcareOne(){
+            d3.select("#description").text("This period saw a lot of the same reported risks and yet was the only major period of decline for the industry. 2008 crisis meant a lot of people couldn't afford health care.");
+        }
+        function healthcareTwo(){
+            d3.select("#description").text("Obamacare was passed around the start of this period. This was a 4 year time of extreme growth for the healthcare industry as well as large numbers of changes within their risk factors. This could be due to the boom in biotech and significant risks that come with it. This trend of innovation accompanied with stock growth and changes in risk factors also occurred in the energy sector.");
+        }
+        function healthcareThree(){
+            d3.select("#description").text("This period of slower growth compared to the last four years was also accompanied by less changes in risk. As companies become more stable in their risks, it makes sense that their businesses are more stable as well.");
+        }
+        
+        
+        
+        function drawInformationTechnologySector(){
+            itDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",680).attr("y",0).attr("width", 120).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",itOne).on("mouseout",itDefault);
+            d3.select("#industry").text("Industry: Information Technology");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Information Technology"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"it")).attr("y1",400).attr("x2",linex(count,"it")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(473766))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function itDefault(){
+            d3.select("#description").text("The IT industry is not very cyclic which means its not dominated by macroeconomic trends, which is promising for this type of analysis. Especially given the trends of the energy and healthcare sector with regards to innovation, the IT industry is arguably the sector that sees the most technological advancement. The industry is literally based on technology. As a result, there's the repeating trend of high number of changes throughout the years from 2007 to present. While there are still a good number of companies that decline, the majority of the industry grows along with the drastic changes made to their risks. In addition, most of the really stable companies (yellow lines) had very small price changes.");
+        }
+        function itOne(){
+            d3.select("#description").text("Interesting to note here that IBM takes credit for both yellow lines, signifying that they made 0 changes to their 10-k for 2 years in a row.");
+        }
+        
+        function drawUtilitiesSector(){
+            utilitiesDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",400).attr("width", 160).attr("height", 310).attr("fill","#1E1E1E").on("mouseover",utilitiesOne).on("mouseout",utilitiesDefault);
+            target.append("rect").attr("x",218).attr("y",0).attr("width", 505).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",utilitiesTwo).on("mouseout",utilitiesDefault);
+            d3.select("#industry").text("Industry: Utilities");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Utilities"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"utilities")).attr("y1",400).attr("x2",linex(count,"utilities")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(414144))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function utilitiesDefault(){
+            d3.select("#description").text("The utilities industry is the most stable in terms of both price and risk factors. This is a good indicator that it is the least vulnerable to change. Like energy, utilities is a crucial piece of not only business but life. Every household uses a relatively constant amount of utilities. And unlike energy, utilities aren't directly impacted by macro factors like oil so the industry is even more stable.");
+        }
+        function utilitiesOne(){
+            d3.select("#description").text("This period of random price changes is accompanies by relatively large numbers of change in risks. While the industry took a hit in product from the recession, no companies went bankrupt.");
+        }
+        function utilitiesTwo(){
+            d3.select("#description").text("This period of sustained growth starting from 2011 to 2016, with the exception of February and March of 2015, is dominated by very stable risk factors. This is a promising sign for this type of analysis where more stable 10-k's could represent safer investments. Credit markets and environmental regulations now play a central role in the industry.");
+        }
+        
+        function drawConsumerStaplesSector(){
+            consumerstaplesDefault();
+            d3.select("#industry").text("Industry: Materials");
+            var target=d3.select("#target");
+            target.append("rect").attr("x",100).attr("y",0).attr("width", 600).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",consumerstaplesOne).on("mouseout",consumerstaplesDefault);
+            d3.select("#industry").text("Industry: Consumer Staples");
+            var target=d3.select("#target");
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Consumer Staples"){
+                        target.append("line").datum(data[i]).attr("x1",linex(count,"consumerstaples")).attr("y1",400).attr("x2",linex(count,"consumerstaples")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke", getColor(Math.log(data[i].numberofchanges)/Math.log(326867))).on("mouseover",highlight);
+                        count++;
+                    }
+                }
+            });
+        }
+        function consumerstaplesDefault(){
+            d3.select("#description").text("Interesting to see the growth from 2009-2015 surrounded by periods of randomness before and after in this industry. In general though, during the periods of growth, reported risks wer much more consistent. It also looks like the sector is headed into a more volatile stage where the risks are changing more and more. Overall, this industry is not really effected by economic cycles.");
+        }
+        function consumerstaplesOne(){
+            d3.select("#description").text("Many of the yellow lines are from the company Hormel Foods Corp (HRL). This company seems to be a good measure for how the sector is doing as a whole. During the long period of growth, the company reported 0 changes multiple years in a row and during times of random price fluctuations, the company reported more changes in risks. HRL could be a good proxy for the volatility of the consumer staples industry as a whole. Tobacco sales are decreasing but restaurant sales are increasing. People are buying more online.");
+        }
+        
+        function drawRealEstateSector(){
+            realestateDefault();
+            var target=d3.select("#target");
+            target.append("rect").attr("x",0).attr("y",0).attr("width", 480).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",realestateOne).on("mouseout",realestateDefault);
+            target.append("rect").attr("x",520).attr("y",0).attr("width", 270).attr("height", 400).attr("fill","#1E1E1E").on("mouseover",realestateTwo).on("mouseout",realestateDefault);
+            d3.select("#industry").text("Industry: Real Estate");
+            var target=d3.select("#target");
+            
+            //Draw contextualizing rectangles
+            var count=0;
+            //Used python -m SimpleHTTPServer to import local csv file. Then went to http://localhost:8000/ to test code
+            d3.csv("data-1.csv", function(data) {
+                //Traverse all rows
+                for(i=0;i<3822;i++){
+                    if(data[i].industry=="Real Estate"){
+                       target.append("line").datum(data[i]).attr("x1",linex(count,"realestate")).attr("y1",400).attr("x2",linex(count,"realestate")).attr("y2",400-(data[i].pricechange)*500).attr("stroke-width", 3).attr("stroke",getColor(Math.log(data[i].numberofchanges)/Math.log(326867))).on("mouseover",highlight);
+                        count++;
+                    }
+
+                }
+            });
+        }
+        function realestateDefault(){
+            d3.select("#description").text("The real estate industry saw immense growth in 2009/2010. It was also an industry dominated by significant changes in risks. Up until 2014, not a single risk factors sections remained consistent. This could be due to the unpredictable conditions caused by the 2008 financial crisis. Starting from 2014, as risks stabilize, it could be a signal that the industry is starting to become less vulnerable.");
+        }
+        function realestateOne(){
+            d3.select("#description").text("This period is clearly very different from the next section. It was a time of changing conditions, risks, and stock prices. During a time like this, it may be hard to use this type of analysis because it was such a unique time in the for the industry.");
+        }
+        function realestateTwo(){
+            d3.select("#description").text("This period may be a more accurate representation of how the industry will be moving forward. It's interesting that the risks stabilized in 2014, right around when the housing market began building momentum. In this particular industry, this type of analysis may be extremely relevant in analyzing the vulnerability of companies.");
+        }
+        
+        function getColor(numchanges){
+            f = chroma.scale(['yellow', '008ae5']);
+            return f(numchanges).hex();
+        }
+
+        
+        function highlight(d,i){
+            var line = d3.select(this);
+            d3.select("#ticker").text("Ticker: "+line.datum().ticker);
+            d3.select("#date").text("10-k Release Date: "+line.datum().datereleased);
+            d3.select("#numchanges").text("Number of Changes to 10-k: "+line.datum().numberofchanges);
+            d3.select("#pricechange").text("Price Change: "+line.datum().pricechange*100+"%");
+        }
+        
+        function updateGraph(choice){
+            d3.selectAll("line").remove();
+            d3.selectAll("rect").remove();
+            if(choice=="energy"){
+               drawEnergySector();
+            }
+            else if(choice=="financials"){
+                drawFinancialSector();
+            }
+            else if(choice=="materials"){
+                drawMaterialsSector();
+            }
+            else if(choice=="consumerdiscretionary"){
+                drawConsumerDiscretionarySector();
+            }
+            else if(choice=="healthcare"){
+                drawHealthCareSector();
+            }
+            else if(choice=="industrials"){
+                drawIndustrialsSector();
+            }
+            else if(choice=="realestate"){
+                drawRealEstateSector();
+            }
+            else if(choice=="it"){
+                drawInformationTechnologySector();
+            }
+            else if(choice=="utilities"){
+                drawUtilitiesSector();
+            }
+            else if(choice=="consumerstaples"){
+                drawConsumerStaplesSector();
+            }
+            else{
+                drawTelecommunicationsSector();
+            }
+        }
+        
+    </script>
+    <style>
+        line:hover{
+            stroke:red;
+            stroke-opacity: 1.0;
+        }
+        
+        p{
+            padding-right: 30px;
+        }
+        
+        body{
+            background-color: #323232;
+        }
+        #energybutton{
+            background-color: transparent;
+            color: #FBFC09;
+            border: 1px solid #FBFC09;
+            
+        }
+        #energybutton:hover{
+            background-color: #FBFC09;
+            color: white;
+        }
+        #financialsbutton{
+            background-color: transparent;
+            color: #93EF8C;
+            border: 1px solid #93EF8C;
+            
+        }
+        #financialsbutton:hover{
+            background-color: #93EF8C;
+            color: white;
+        }
+        #materialsbutton{
+            background-color: transparent;
+            color: #5ECBAC;
+            border: 1px solid #5ECBAC;
+            
+        }
+        #materialsbutton:hover{
+            background-color: #5ECBAC;
+            color: white;
+        }
+        #utilitiesbutton{
+            background-color: transparent;
+            color: #2FAAC9;
+            border: 1px solid #2FAAC9;
+            
+        }
+        #utilitiesbutton:hover{
+            background-color: #2FAAC9;
+            color: white;
+        }
+        #industrialsbutton{
+            background-color: transparent;
+            color: 	#008BE9;
+            border: 1px solid 	#008BE9;
+            
+        }
+        #industrialsbutton:hover{
+            background-color: 	#008BE9;
+            color: white;
+        }
+        #healthcarebutton{
+            background-color: transparent;
+            color: #FBFC09;
+            border: 1px solid #FBFC09;
+            
+        }
+        #healthcarebutton:hover{
+            background-color: #FBFC09;
+            color: white;
+        }
+        #realestatebutton{
+            background-color: transparent;
+            color: #93EF8C;
+            border: 1px solid #93EF8C;
+            
+        }
+        #realestatebutton:hover{
+            background-color: #93EF8C;
+            color: white;
+        }
+        #itbutton{
+            background-color: transparent;
+            color: #5ECBAC;
+            border: 1px solid #5ECBAC;
+            
+        }
+        #itbutton:hover{
+            background-color: #5ECBAC;
+            color: white;
+        }
+        #consumerdiscretionarybutton{
+            background-color: transparent;
+            color: #2FAAC9;
+            border: 1px solid #2FAAC9;
+            
+        }
+        #consumerdiscretionarybutton:hover{
+            background-color: #2FAAC9;
+            color: white;
+        }
+        #consumerstaplesbutton{
+            background-color: transparent;
+            color: 	#008BE9;
+            border: 1px solid 	#008BE9;
+            
+        }
+        #consumerstaplesbutton:hover{
+            background-color: 	#008BE9;
+            color: white;
+        }
+        button:focus {
+            outline:0 !important;
+        }
+        rect:hover{
+            fill:#6A6A6A;
+        }
+    </style>
+
+</head>
+<body style="font-family:Candara;">
+    <div width="100%" height="100%" style="position: relative; display: flex;">
+        <div style="float:left;width:50px">
+            <svg height="800">
+                <text x="10" y="20" font-size="10px" fill="white">+ Price</text>
+                <text x="10" y="30" font-size="10px" fill="white">Change</text>
+                <text x="5" y="410" font-size="10px" fill="white">Start Year</text>
+                <text x="10" y="700" font-size="10px" fill="white">- Price</text>
+                <text x="10" y="710" font-size="10px" fill="white">Change</text>
+            </svg>
+        </div>
+        <div style="float:left;padding-top:10px;">
+            <svg width="800" height="800" id="target">
+                <text x="659" y="630" font-size="10px" fill="white">No. of Changes</text>
+                <text x="630" y="645" font-size="10px" fill="white">Min</text>
+                <text x="733" y="645" font-size="10px" fill="white">Max</text>
+                <image xlink:href="legend.png" x="650" y="600" height="80px" width="80px"/>
+            </svg>
+        </div>
+        <div style="float:left;width:50px">
+            <svg height="800" width="50">
+                <text x="5" y="410" font-size="10px" fill="white">End Year</text>
+            </svg>
+        </div>
+        <div style="float:right;">
+            <div>
+                <h2 style="color:white;">Change is Good...Or is it?</h2>
+                <p id="description" style="color:white;">A deeper look into a company's 10-k financial statement, specifically the risk factors section. By looking at the number of changes made each year and the change in stock price 4 months after the 10-k's release, we can begin to answer questions like: Is the company becoming more vulnerable? When companies change their risk factors, is that a good or bad sign? What factors cause the most changes to occur?</p>
+            </div>
+            <div>
+                <h4 style="padding-top:50px;color:white;" id="industry">Industry:</h4>
+                <h4 id="ticker" style="color:white;">Ticker:</h4>
+                <h4 style="color:white;" id="date">10-k Release Date:</h4>
+                <h4 style="color:white;" id="numchanges">Number of Changes:</h4>
+                <h4 id="pricechange" style="padding-bottom:30px;color:white;">Price Change:</h4>
+            </div>
+            <div height = "400px" style="padding-right: 30px;">
+                <div style="float:left;width:50%;padding-right:10px;">
+                    <button id="energybutton" class="btn ghost" value="energy" onclick="updateGraph(this.value);">Energy</button>
+                    <button id="financialsbutton" class="btn ghost" value="financials" onclick="updateGraph(this.value);">Financials</button>
+                    <button id="materialsbutton" class="btn ghost" value="materials" onclick="updateGraph(this.value);">Materials</button>
+                    <button id="utilitiesbutton" class="btn ghost" value="utilities" onclick="updateGraph(this.value);">Utilities</button>
+                    <button id="industrialsbutton" class="btn ghost" value="industrials" onclick="updateGraph(this.value);">Industrials</button>
+                </div>
+                <div style="float:left; width:50%;padding-left:10px;">
+                    <button id="healthcarebutton" class="btn ghost" value="healthcare" onclick="updateGraph(this.value);">Health Care</button>
+                    <button id="realestatebutton" class="btn ghost" value="realestate" onclick="updateGraph(this.value);">Real Estate</button>
+                    <button id="itbutton" class="btn ghost" value="it" onclick="updateGraph(this.value);">Information Technology</button>
+                    <button id="consumerdiscretionarybutton" class="btn ghost" value="consumerdiscretionary" onclick="updateGraph(this.value);">Consumer Discretionary</button>
+                    <button id="consumerstaplesbutton" class="btn ghost" value="consumerstaples" onclick="updateGraph(this.value);">Consumer Staples</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
